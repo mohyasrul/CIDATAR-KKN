@@ -1,73 +1,176 @@
-# Welcome to your Lovable project
+# 🏛️ CIDATAR Bank Sampah - KKN Project
 
-## Project info
+Aplikasi Bank Sampah modern untuk mengelola sistem tabungan sampah di tingkat RT/RW dengan antarmuka yang user-friendly dan penyimpanan lokal.
 
-**URL**: https://lovable.dev/projects/fce595b9-9a8a-40bf-ba02-cd8f807ed4dc
+## 🌟 Features
 
-## How can I edit this code?
+### 📊 Dashboard Real-time
+- Statistik total RT terdaftar
+- Setoran sampah hari ini
+- Total tabungan keseluruhan
+- Transaksi bulan berjalan
+- Riwayat transaksi terbaru
 
-There are several ways of editing your application.
+### 🏘️ Manajemen RT
+- CRUD data Rukun Tetangga
+- Informasi ketua RT dan jumlah KK
+- Tracking saldo tabungan per RT
+- Riwayat transaksi per RT
 
-**Use Lovable**
+### ♻️ Sistem Setoran Sampah
+- Input setoran dengan berbagai jenis sampah
+- Kalkulasi otomatis nilai tabungan
+- Harga sampah yang dapat dikonfigurasi
+- Update real-time saldo RT
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/fce595b9-9a8a-40bf-ba02-cd8f807ed4dc) and start prompting.
+### 💰 Manajemen Tabungan
+- Saldo tabungan per RT
+- Sistem penarikan dengan validasi
+- Riwayat transaksi lengkap
+- Summary statistik tabungan
 
-Changes made via Lovable will be committed automatically to this repo.
+### 📈 Laporan & Analitik
+- Laporan berdasarkan periode tanggal
+- Distribusi jenis sampah
+- Ranking performa RT
+- Tren setoran harian
+- Export ke JSON/CSV
 
-**Use your preferred IDE**
+### ⚙️ Pengaturan Sistem
+- Konfigurasi harga sampah
+- Backup & restore data
+- Informasi sistem real-time
+- Reset data dengan konfirmasi
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🛠️ Tech Stack
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- **Frontend**: React 18 + TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS
+- **UI Components**: Shadcn/UI
+- **Icons**: Lucide React
+- **Storage**: localStorage (Client-side)
+- **State Management**: React Hooks + Custom Storage Utilities
 
-Follow these steps:
+## 🚀 Installation & Setup
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### Prerequisites
+- Node.js 18+ atau Bun
+- Git
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+### Clone Repository
+```bash
+git clone https://github.com/mohyasrul/CIDATAR-KKN.git
+cd CIDATAR-KKN
 ```
 
-**Edit a file directly in GitHub**
+### Install Dependencies
+```bash
+# Using npm
+npm install
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+# Using bun
+bun install
+```
 
-**Use GitHub Codespaces**
+### Run Development Server
+```bash
+# Using npm
+npm run dev
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+# Using bun
+bun dev
+```
 
-## What technologies are used for this project?
+Aplikasi akan berjalan di `http://localhost:8080`
 
-This project is built with:
+### Build for Production
+```bash
+# Using npm
+npm run build
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+# Using bun
+bun run build
+```
 
-## How can I deploy this project?
+## 📁 Project Structure
 
-Simply open [Lovable](https://lovable.dev/projects/fce595b9-9a8a-40bf-ba02-cd8f807ed4dc) and click on Share -> Publish.
+```
+src/
+├── components/           # React components
+│   ├── ui/              # Reusable UI components (Shadcn)
+│   ├── Dashboard.tsx    # Dashboard utama
+│   ├── RTManagement.tsx # Manajemen RT
+│   ├── WasteDeposit.tsx # Input setoran sampah
+│   ├── Savings.tsx      # Manajemen tabungan
+│   ├── Reports.tsx      # Laporan & analitik
+│   └── Settings.tsx     # Pengaturan sistem
+├── lib/
+│   ├── localStorage.ts  # Utilities untuk localStorage
+│   └── utils.ts        # Helper utilities
+├── hooks/              # Custom React hooks
+├── pages/              # Page components
+└── main.tsx           # Entry point
+```
 
-## Can I connect a custom domain to my Lovable project?
+## 💾 Data Storage
 
-Yes, you can!
+Aplikasi menggunakan **localStorage** untuk penyimpanan data client-side dengan fitur:
+- ✅ Auto-save semua perubahan
+- ✅ Real-time synchronization antar komponen
+- ✅ Backup & restore functionality
+- ✅ Data persistence antar session
+- ✅ No database required
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 🔄 Workflow
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+1. **Setup RT** → Tambah data RT di menu RT Management
+2. **Input Setoran** → Catat setoran sampah per RT
+3. **Auto-Update** → Tabungan RT otomatis bertambah
+4. **Penarikan** → Proses penarikan tabungan dengan validasi
+5. **Monitoring** → Pantau via Dashboard dan Laporan
+
+## 🎯 Key Features
+
+- **Real-time Updates**: Semua perubahan langsung ter-sync
+- **Responsive Design**: Mobile-friendly interface
+- **Data Validation**: Input validation untuk semua form
+- **Export Functionality**: Export laporan ke JSON/CSV
+- **Backup System**: Backup dan restore seluruh data
+- **User-friendly**: Interface intuitif dan mudah digunakan
+
+## 👥 Target Users
+
+- Pengurus Bank Sampah RT/RW
+- Admin komunitas lingkungan
+- Koordinator program kebersihan
+- Tim KKN/mahasiswa
+
+## 📱 Browser Support
+
+- Chrome/Edge 90+
+- Firefox 88+
+- Safari 14+
+
+## 🤝 Contributing
+
+1. Fork repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+## 📞 Contact
+
+**CIDATAR KKN Team**
+- GitHub: [@mohyasrul](https://github.com/mohyasrul)
+- Repository: [CIDATAR-KKN](https://github.com/mohyasrul/CIDATAR-KKN)
+
+---
+
+### 🌱 Developed for Environmental Sustainability
+*Mendukung program pengelolaan sampah berkelanjutan di tingkat komunitas*
