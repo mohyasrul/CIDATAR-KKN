@@ -7,18 +7,19 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   BarChart3, 
-  Download, 
   Calendar, 
   TrendingUp, 
   Users,
   Scale,
   DollarSign,
-  FileText,
   Mail,
   Smartphone,
   Target,
-  Award
+  Award,
+  FileSpreadsheet,
+  Download
 } from "lucide-react";
+import * as ExcelJS from 'exceljs';
 import { rtStorage, wasteDepositStorage, rtSavingsStorage, transactionStorage } from "@/lib/localStorage";
 
 export const Reports = () => {
@@ -166,7 +167,7 @@ export const Reports = () => {
     setDailyTrend(last7Days);
   };
 
-  const handleExport = (format: string) => {
+  const handleExport = async (format: string) => {
     const reportData = {
       dateRange,
       reportType,
@@ -177,50 +178,172 @@ export const Reports = () => {
       generatedAt: new Date().toISOString()
     };
 
-    if (format === 'json') {
-      const dataStr = JSON.stringify(reportData, null, 2);
-      const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-      const exportFileDefaultName = `laporan-banksampah-${new Date().toISOString().split('T')[0]}.json`;
-      
-      const linkElement = document.createElement('a');
-      linkElement.setAttribute('href', dataUri);
-      linkElement.setAttribute('download', exportFileDefaultName);
-      linkElement.click();
-    } else if (format === 'csv') {
-      // Create CSV content
-      let csvContent = "data:text/csv;charset=utf-8,";
-      csvContent += "Laporan Bank Sampah\n";
-      csvContent += `Periode: ${dateRange.startDate} - ${dateRange.endDate}\n\n`;
-      
-      csvContent += "RT,Total Setoran (kg),Total Nilai (Rp),Jumlah Transaksi\n";
-      rtRanking.forEach(rt => {
-        csvContent += `${rt.rt},${rt.deposits},${rt.value},${rt.transactions}\n`;
-      });
-      
-      const encodedUri = encodeURI(csvContent);
-      const linkElement = document.createElement('a');
-      linkElement.setAttribute('href', encodedUri);
-      linkElement.setAttribute('download', `laporan-banksampah-${new Date().toISOString().split('T')[0]}.csv`);
-      linkElement.click();
+    if (format === 'excel') {
+      await exportToExcel(reportData);
     }
   };
 
+  const exportToExcel = async (reportData: any) => {
+    const workbook = new ExcelJS.Workbook();
+    
+    // Worksheet 1: Summary Statistics
+    const summarySheet = workbook.addWorksheet('Ringkasan');
+    
+    // Header styling
+    const headerStyle = {
+      font: { name: 'Arial', size: 12, bold: true },
+      fill: { type: 'pattern' as const, pattern: 'solid' as const, fgColor: { argb: 'FFE6F3FF' } },
+      border: {
+        top: { style: 'thin' as const },
+        left: { style: 'thin' as const },
+        bottom: { style: 'thin' as const },
+        right: { style: 'thin' as const }
+      }
+    };
+
+    const dataStyle = {
+      font: { name: 'Arial', size: 11 },
+      border: {
+        top: { style: 'thin' as const },
+        left: { style: 'thin' as const },
+        bottom: { style: 'thin' as const },
+        right: { style: 'thin' as const }
+      }
+    };
+
+    // Title
+    summarySheet.getCell('A1').value = 'LAPORAN BANK SAMPAH';
+    summarySheet.getCell('A1').font = { name: 'Arial', size: 16, bold: true };
+    summarySheet.getCell('A2').value = `Periode: ${new Date(dateRange.startDate).toLocaleDateString('id-ID')} - ${new Date(dateRange.endDate).toLocaleDateString('id-ID')}`;
+    summarySheet.getCell('A2').font = { name: 'Arial', size: 12 };
+    summarySheet.getCell('A3').value = `Generated: ${new Date().toLocaleDateString('id-ID')} ${new Date().toLocaleTimeString('id-ID')}`;
+    summarySheet.getCell('A3').font = { name: 'Arial', size: 10, italic: true };
+
+    // Summary Statistics
+    summarySheet.getCell('A5').value = 'RINGKASAN STATISTIK';
+    summarySheet.getCell('A5').font = { name: 'Arial', size: 14, bold: true };
+
+    const summaryData = [
+      ['Metrik', 'Nilai'],
+      ['Total Setoran (kg)', monthlyStats.totalDeposits],
+      ['Total Nilai (Rp)', monthlyStats.totalValue.toLocaleString('id-ID')],
+      ['RT Aktif', monthlyStats.activeRTs],
+      ['Total Transaksi', monthlyStats.transactions],
+      ['Rata-rata per RT (kg)', monthlyStats.averagePerRT.toFixed(2)]
+    ];
+
+    summaryData.forEach((row, index) => {
+      const rowIndex = index + 7;
+      row.forEach((cell, colIndex) => {
+        const cellRef = summarySheet.getCell(rowIndex, colIndex + 1);
+        cellRef.value = cell;
+        cellRef.style = index === 0 ? headerStyle : dataStyle;
+      });
+    });
+
+    // Worksheet 2: RT Ranking
+    const rtSheet = workbook.addWorksheet('Ranking RT');
+    
+    rtSheet.getCell('A1').value = 'RANKING RT BERDASARKAN SETORAN';
+    rtSheet.getCell('A1').font = { name: 'Arial', size: 14, bold: true };
+
+    const rtHeaders = ['Peringkat', 'RT', 'Total Setoran (kg)', 'Total Nilai (Rp)', 'Jumlah Transaksi'];
+    rtHeaders.forEach((header, index) => {
+      const cell = rtSheet.getCell(3, index + 1);
+      cell.value = header;
+      cell.style = headerStyle;
+    });
+
+    rtRanking.forEach((rt, index) => {
+      const rowIndex = index + 4;
+      const rowData = [rt.rank, rt.rt, rt.deposits, rt.value.toLocaleString('id-ID'), rt.transactions];
+      rowData.forEach((cell, colIndex) => {
+        const cellRef = rtSheet.getCell(rowIndex, colIndex + 1);
+        cellRef.value = cell;
+        cellRef.style = dataStyle;
+      });
+    });
+
+    // Worksheet 3: Waste Type Distribution
+    const wasteSheet = workbook.addWorksheet('Distribusi Sampah');
+    
+    wasteSheet.getCell('A1').value = 'DISTRIBUSI JENIS SAMPAH';
+    wasteSheet.getCell('A1').font = { name: 'Arial', size: 14, bold: true };
+
+    const wasteHeaders = ['Jenis Sampah', 'Berat (kg)', 'Nilai (Rp)', 'Persentase (%)'];
+    wasteHeaders.forEach((header, index) => {
+      const cell = wasteSheet.getCell(3, index + 1);
+      cell.value = header;
+      cell.style = headerStyle;
+    });
+
+    wasteTypeData.forEach((waste, index) => {
+      const rowIndex = index + 4;
+      const rowData = [waste.type, waste.weight, waste.value.toLocaleString('id-ID'), waste.percentage.toFixed(1) + '%'];
+      rowData.forEach((cell, colIndex) => {
+        const cellRef = wasteSheet.getCell(rowIndex, colIndex + 1);
+        cellRef.value = cell;
+        cellRef.style = dataStyle;
+      });
+    });
+
+    // Worksheet 4: Daily Trend
+    const trendSheet = workbook.addWorksheet('Tren Harian');
+    
+    trendSheet.getCell('A1').value = 'TREN SETORAN 7 HARI TERAKHIR';
+    trendSheet.getCell('A1').font = { name: 'Arial', size: 14, bold: true };
+
+    const trendHeaders = ['Tanggal', 'Setoran (kg)', 'Nilai (Rp)'];
+    trendHeaders.forEach((header, index) => {
+      const cell = trendSheet.getCell(3, index + 1);
+      cell.value = header;
+      cell.style = headerStyle;
+    });
+
+    dailyTrend.forEach((day, index) => {
+      const rowIndex = index + 4;
+      const rowData = [day.date, day.deposits, day.value.toLocaleString('id-ID')];
+      rowData.forEach((cell, colIndex) => {
+        const cellRef = trendSheet.getCell(rowIndex, colIndex + 1);
+        cellRef.value = cell;
+        cellRef.style = dataStyle;
+      });
+    });
+
+    // Auto-fit columns
+    [summarySheet, rtSheet, wasteSheet, trendSheet].forEach(sheet => {
+      sheet.columns.forEach(column => {
+        column.width = 15;
+      });
+    });
+
+    // Generate and download file
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = window.URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `laporan-banksampah-${new Date().toISOString().split('T')[0]}.xlsx`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    window.URL.revokeObjectURL(url);
+  };
+
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="space-y-4 lg:space-y-6">
+      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold">Laporan & Analitik</h2>
-          <p className="text-muted-foreground">Analisis kinerja dan tren tabungan sampah</p>
+          <h2 className="text-xl lg:text-2xl font-bold">Laporan & Analitik</h2>
+          <p className="text-sm lg:text-base text-muted-foreground">Analisis kinerja dan tren tabungan sampah</p>
         </div>
         
-        <div className="flex space-x-2">
-          <Button variant="outline" onClick={() => handleExport('json')}>
-            <FileText className="mr-2 h-4 w-4" />
-            Export JSON
-          </Button>
-          <Button variant="outline" onClick={() => handleExport('csv')}>
-            <Download className="mr-2 h-4 w-4" />
-            Export CSV
+        <div className="flex flex-col lg:flex-row gap-2 lg:space-x-2">
+          <Button variant="outline" onClick={() => handleExport('excel')} className="w-full lg:w-auto h-10 lg:h-11">
+            <FileSpreadsheet className="mr-2 h-4 w-4" />
+            Export Excel
           </Button>
         </div>
       </div>
@@ -228,14 +351,14 @@ export const Reports = () => {
       {/* Filters */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Filter Laporan</CardTitle>
+          <CardTitle className="text-lg lg:text-xl">Filter Laporan</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <CardContent className="px-3 lg:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
             <div className="space-y-2">
-              <Label>Jenis Laporan</Label>
+              <Label className="text-sm font-medium">Jenis Laporan</Label>
               <Select value={reportType} onValueChange={setReportType}>
-                <SelectTrigger>
+                <SelectTrigger className="h-10 lg:h-11">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-popover">
@@ -248,25 +371,27 @@ export const Reports = () => {
             </div>
             
             <div className="space-y-2">
-              <Label>Tanggal Mulai</Label>
+              <Label className="text-sm font-medium">Tanggal Mulai</Label>
               <Input
                 type="date"
                 value={dateRange.startDate}
                 onChange={(e) => setDateRange({ ...dateRange, startDate: e.target.value })}
+                className="h-10 lg:h-11"
               />
             </div>
             
             <div className="space-y-2">
-              <Label>Tanggal Selesai</Label>
+              <Label className="text-sm font-medium">Tanggal Selesai</Label>
               <Input
                 type="date"
                 value={dateRange.endDate}
                 onChange={(e) => setDateRange({ ...dateRange, endDate: e.target.value })}
+                className="h-10 lg:h-11"
               />
             </div>
             
             <div className="flex items-end">
-              <Button className="w-full" onClick={calculateReportData}>
+              <Button className="w-full h-10 lg:h-11" onClick={calculateReportData}>
                 <BarChart3 className="mr-2 h-4 w-4" />
                 Generate
               </Button>
@@ -276,14 +401,14 @@ export const Reports = () => {
       </Card>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Setoran</CardTitle>
+            <CardTitle className="text-xs lg:text-sm font-medium">Total Setoran</CardTitle>
             <Scale className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{monthlyStats.totalDeposits} kg</div>
+          <CardContent className="px-3 lg:px-6">
+            <div className="text-lg lg:text-2xl font-bold">{monthlyStats.totalDeposits} kg</div>
             <div className="flex items-center space-x-1 text-xs">
               <TrendingUp className="h-3 w-3 text-success" />
               <span className="text-success">+{monthlyStats.growth}%</span>
@@ -294,11 +419,11 @@ export const Reports = () => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Nilai</CardTitle>
+            <CardTitle className="text-xs lg:text-sm font-medium">Total Nilai</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">Rp {monthlyStats.totalValue.toLocaleString('id-ID')}</div>
+          <CardContent className="px-3 lg:px-6">
+            <div className="text-lg lg:text-2xl font-bold">Rp {monthlyStats.totalValue.toLocaleString('id-ID')}</div>
             <p className="text-xs text-muted-foreground">
               {monthlyStats.transactions > 0 ? `Rata-rata Rp ${Math.round(monthlyStats.totalValue / monthlyStats.transactions).toLocaleString('id-ID')}/transaksi` : 'Belum ada transaksi'}
             </p>
@@ -307,22 +432,22 @@ export const Reports = () => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">RT Aktif</CardTitle>
+            <CardTitle className="text-xs lg:text-sm font-medium">RT Aktif</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{monthlyStats.activeRTs}</div>
+          <CardContent className="px-3 lg:px-6">
+            <div className="text-lg lg:text-2xl font-bold">{monthlyStats.activeRTs}</div>
             <p className="text-xs text-muted-foreground">dari 0 RT terdaftar</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Transaksi</CardTitle>
+            <CardTitle className="text-xs lg:text-sm font-medium">Total Transaksi</CardTitle>
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{monthlyStats.transactions}</div>
+          <CardContent className="px-3 lg:px-6">
+            <div className="text-lg lg:text-2xl font-bold">{monthlyStats.transactions}</div>
             <p className="text-xs text-muted-foreground">
               {monthlyStats.activeRTs > 0 ? `Rata-rata ${Math.round(monthlyStats.averagePerRT)} kg/RT` : 'Belum ada data'}
             </p>
@@ -330,22 +455,22 @@ export const Reports = () => {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
         {/* Waste Type Distribution */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Target className="h-5 w-5" />
+            <CardTitle className="flex items-center space-x-2 text-lg lg:text-xl">
+              <Target className="h-4 lg:h-5 w-4 lg:w-5" />
               <span>Distribusi Jenis Sampah</span>
             </CardTitle>
-            <CardDescription>Breakdown setoran berdasarkan jenis sampah</CardDescription>
+            <CardDescription className="text-sm">Breakdown setoran berdasarkan jenis sampah</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-3 lg:px-6">
             <div className="space-y-4">
               {wasteTypeData.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Target className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <h3 className="text-lg font-medium mb-2">Belum Ada Data</h3>
+                <div className="text-center py-6 lg:py-8 text-muted-foreground">
+                  <Target className="h-10 lg:h-12 w-10 lg:w-12 mx-auto mb-4 opacity-50" />
+                  <h3 className="text-base lg:text-lg font-medium mb-2">Belum Ada Data</h3>
                   <p className="text-sm">
                     Data distribusi sampah akan muncul setelah ada setoran
                   </p>
@@ -366,7 +491,7 @@ export const Reports = () => {
                         style={{ width: `${item.percentage}%` }}
                       />
                     </div>
-                    <p className="text-xs text-muted-foreground">{item.percentage}% dari total</p>
+                    <p className="text-xs text-muted-foreground">{item.percentage.toFixed(1)}% dari total</p>
                   </div>
                 ))
               )}
@@ -377,18 +502,18 @@ export const Reports = () => {
         {/* RT Ranking */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Award className="h-5 w-5" />
+            <CardTitle className="flex items-center space-x-2 text-lg lg:text-xl">
+              <Award className="h-4 lg:h-5 w-4 lg:w-5" />
               <span>Ranking RT</span>
             </CardTitle>
-            <CardDescription>Performa setoran per RT bulan ini</CardDescription>
+            <CardDescription className="text-sm">Performa setoran per RT bulan ini</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-3 lg:px-6">
             <div className="space-y-3">
               {rtRanking.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Award className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <h3 className="text-lg font-medium mb-2">Belum Ada Ranking</h3>
+                <div className="text-center py-6 lg:py-8 text-muted-foreground">
+                  <Award className="h-10 lg:h-12 w-10 lg:w-12 mx-auto mb-4 opacity-50" />
+                  <h3 className="text-base lg:text-lg font-medium mb-2">Belum Ada Ranking</h3>
                   <p className="text-sm">
                     Ranking RT akan muncul setelah ada aktivitas setoran
                   </p>
@@ -397,11 +522,11 @@ export const Reports = () => {
                 rtRanking.map((rt) => (
                   <div key={rt.rt} className="flex items-center justify-between p-3 bg-accent/30 rounded-lg">
                     <div className="flex items-center space-x-3">
-                      <Badge variant={rt.rank <= 3 ? "default" : "secondary"} className="w-8 h-8 rounded-full flex items-center justify-center">
+                      <Badge variant={rt.rank <= 3 ? "default" : "secondary"} className="w-6 lg:w-8 h-6 lg:h-8 rounded-full flex items-center justify-center text-xs">
                         {rt.rank}
                       </Badge>
                       <div>
-                        <p className="font-medium">{rt.rt}</p>
+                        <p className="font-medium text-sm lg:text-base">{rt.rt}</p>
                         <p className="text-xs text-muted-foreground">{rt.transactions} transaksi</p>
                       </div>
                     </div>
@@ -420,31 +545,31 @@ export const Reports = () => {
       {/* Daily Trend Chart */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Calendar className="h-5 w-5" />
+          <CardTitle className="flex items-center space-x-2 text-lg lg:text-xl">
+            <Calendar className="h-4 lg:h-5 w-4 lg:w-5" />
             <span>Tren Setoran Harian</span>
           </CardTitle>
-          <CardDescription>Grafik setoran sampah 7 hari terakhir</CardDescription>
+          <CardDescription className="text-sm">Grafik setoran sampah 7 hari terakhir</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-3 lg:px-6">
           <div className="space-y-4">
             {dailyTrend.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <h3 className="text-lg font-medium mb-2">Belum Ada Data Tren</h3>
+              <div className="text-center py-6 lg:py-8 text-muted-foreground">
+                <Calendar className="h-10 lg:h-12 w-10 lg:w-12 mx-auto mb-4 opacity-50" />
+                <h3 className="text-base lg:text-lg font-medium mb-2">Belum Ada Data Tren</h3>
                 <p className="text-sm">
                   Grafik tren akan muncul setelah ada data setoran harian
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-7 gap-2">
+              <div className="grid grid-cols-7 gap-1 lg:gap-2">
                 {dailyTrend.map((day, index) => {
                   const maxValue = Math.max(...dailyTrend.map(d => d.deposits));
                   const height = maxValue > 0 ? (day.deposits / maxValue) * 100 : 0;
                   
                   return (
                     <div key={day.date} className="text-center">
-                      <div className="bg-muted rounded-lg p-2 mb-2 h-32 flex items-end justify-center">
+                      <div className="bg-muted rounded-lg p-1 lg:p-2 mb-2 h-24 lg:h-32 flex items-end justify-center">
                         <div 
                           className="bg-primary rounded-sm w-full transition-all"
                           style={{ height: `${height}%` }}
@@ -465,20 +590,20 @@ export const Reports = () => {
       {/* Share Options */}
       <Card>
         <CardHeader>
-          <CardTitle>Bagikan Laporan</CardTitle>
-          <CardDescription>Kirim laporan melalui berbagai platform</CardDescription>
+          <CardTitle className="text-lg lg:text-xl">Bagikan Laporan</CardTitle>
+          <CardDescription className="text-sm">Kirim laporan melalui berbagai platform</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="flex space-x-3">
-            <Button variant="outline" size="sm">
+        <CardContent className="px-3 lg:px-6">
+          <div className="flex flex-col lg:flex-row gap-2 lg:space-x-3 lg:gap-0">
+            <Button variant="outline" size="sm" className="w-full lg:w-auto h-10 lg:h-9">
               <Mail className="mr-2 h-4 w-4" />
               Email
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="w-full lg:w-auto h-10 lg:h-9">
               <Smartphone className="mr-2 h-4 w-4" />
               WhatsApp
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="w-full lg:w-auto h-10 lg:h-9">
               <Download className="mr-2 h-4 w-4" />
               Download Link
             </Button>

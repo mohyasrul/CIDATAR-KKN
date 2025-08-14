@@ -7,8 +7,6 @@ import {
   Scale, 
   Wallet, 
   TrendingUp, 
-  Plus,
-  Download,
   ArrowUpRight,
   ArrowDownRight
 } from "lucide-react";
@@ -108,23 +106,23 @@ export const Dashboard = () => {
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4 lg:space-y-8">
       {/* Statistics Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
         {dashboardStats.map((stat) => {
           const Icon = stat.icon;
           return (
             <Card key={stat.title} className="hover:shadow-md transition-shadow">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-3 lg:px-6 pt-3 lg:pt-6">
+                <CardTitle className="text-xs lg:text-sm font-medium text-muted-foreground">
                   {stat.title}
                 </CardTitle>
-                <Icon className="h-4 w-4 text-muted-foreground" />
+                <Icon className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground" />
               </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-foreground">{stat.value}</div>
-                <p className="text-xs text-muted-foreground mt-1">{stat.description}</p>
-                <Badge variant="secondary" className="mt-2 text-xs">
+              <CardContent className="px-3 lg:px-6 pb-3 lg:pb-6">
+                <div className="text-lg lg:text-2xl font-bold text-foreground">{stat.value}</div>
+                <p className="text-xs text-muted-foreground mt-1 hidden lg:block">{stat.description}</p>
+                <Badge variant="secondary" className="mt-1 lg:mt-2 text-xs">
                   {stat.trend}
                 </Badge>
               </CardContent>
@@ -133,36 +131,14 @@ export const Dashboard = () => {
         })}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-6">
-        {/* Quick Actions */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Aksi Cepat</CardTitle>
-            <CardDescription>Operasi yang sering digunakan</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Button className="w-full justify-start" size="lg">
-              <Plus className="mr-2 h-4 w-4" />
-              Input Setoran Sampah
-            </Button>
-            <Button variant="outline" className="w-full justify-start" size="lg">
-              <Users className="mr-2 h-4 w-4" />
-              Kelola Data RT
-            </Button>
-            <Button variant="outline" className="w-full justify-start" size="lg">
-              <Download className="mr-2 h-4 w-4" />
-              Unduh Laporan
-            </Button>
-          </CardContent>
-        </Card>
-
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
         {/* Recent Transactions */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Transaksi Terbaru</CardTitle>
-            <CardDescription>Aktivitas terakhir</CardDescription>
+            <CardTitle className="text-base lg:text-lg">Transaksi Terbaru</CardTitle>
+            <CardDescription className="text-sm">Aktivitas terakhir</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-3 lg:px-6">
             <div className="space-y-3">
               {recentTransactions.length === 0 ? (
                 <div className="text-center py-6 text-muted-foreground">
@@ -208,10 +184,10 @@ export const Dashboard = () => {
         {/* RT Savings Overview */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Tabungan RT</CardTitle>
-            <CardDescription>Saldo per RT</CardDescription>
+            <CardTitle className="text-base lg:text-lg">Tabungan RT</CardTitle>
+            <CardDescription className="text-sm">Saldo per RT</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-3 lg:px-6">
             <div className="space-y-3">
               {rtSavings.length === 0 ? (
                 <div className="text-center py-6 text-muted-foreground">

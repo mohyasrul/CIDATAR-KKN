@@ -130,29 +130,29 @@ export const WasteDeposit = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 lg:space-y-6">
       <div>
-        <h2 className="text-2xl font-bold">Input Setoran Sampah</h2>
-        <p className="text-muted-foreground">Catat setoran sampah dari RT dan kelola tabungan otomatis</p>
+        <h2 className="text-xl lg:text-2xl font-bold">Input Setoran Sampah</h2>
+        <p className="text-sm lg:text-base text-muted-foreground">Catat setoran sampah dari RT dan kelola tabungan otomatis</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
         {/* Input Form */}
         <div className="lg:col-span-2">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Scale className="h-5 w-5" />
+            <CardHeader className="pb-4 lg:pb-6">
+              <CardTitle className="flex items-center space-x-2 text-base lg:text-lg">
+                <Scale className="h-4 w-4 lg:h-5 lg:w-5" />
                 <span>Form Setoran Sampah</span>
               </CardTitle>
-              <CardDescription>Masukkan detail setoran sampah dari RT</CardDescription>
+              <CardDescription className="text-sm">Masukkan detail setoran sampah dari RT</CardDescription>
             </CardHeader>
             
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <form onSubmit={handleSubmit} className="space-y-4 lg:space-y-6">
+                <div className="grid grid-cols-1 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="date">Tanggal Setoran</Label>
+                    <Label htmlFor="date" className="text-sm font-medium">Tanggal Setoran</Label>
                     <div className="relative">
                       <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -160,20 +160,20 @@ export const WasteDeposit = () => {
                         type="date"
                         value={formData.date}
                         onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                        className="pl-10"
+                        className="pl-10 h-10 lg:h-12"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="rt">Pilih RT</Label>
+                    <Label htmlFor="rt" className="text-sm font-medium">Pilih RT</Label>
                     <Select value={formData.rt} onValueChange={(value) => setFormData({ ...formData, rt: value })}>
-                      <SelectTrigger>
+                      <SelectTrigger className="h-10 lg:h-12">
                         <SelectValue placeholder="Pilih RT yang menyetor" />
                       </SelectTrigger>
                       <SelectContent className="bg-popover">
                         {rtList.length === 0 ? (
-                          <div className="p-2 text-center text-muted-foreground text-sm">
+                          <div className="p-3 text-center text-muted-foreground text-sm">
                             Belum ada RT terdaftar. Silakan tambah RT terlebih dahulu.
                           </div>
                         ) : (

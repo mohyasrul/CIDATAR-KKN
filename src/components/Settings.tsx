@@ -208,41 +208,41 @@ export const Settings = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 lg:space-y-6">
       <div>
-        <h2 className="text-2xl font-bold">Pengaturan Sistem</h2>
-        <p className="text-muted-foreground">Konfigurasi aplikasi dan pengaturan operasional</p>
+        <h2 className="text-xl lg:text-2xl font-bold">Pengaturan Sistem</h2>
+        <p className="text-sm lg:text-base text-muted-foreground">Konfigurasi aplikasi dan pengaturan operasional</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
         {/* Waste Prices Settings */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <DollarSign className="h-5 w-5" />
+            <CardTitle className="flex items-center space-x-2 text-lg lg:text-xl">
+              <DollarSign className="h-4 lg:h-5 w-4 lg:w-5" />
               <span>Harga Sampah</span>
             </CardTitle>
-            <CardDescription>Atur harga per kilogram untuk setiap jenis sampah</CardDescription>
+            <CardDescription className="text-sm">Atur harga per kilogram untuk setiap jenis sampah</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 px-3 lg:px-6">
             {wastePrices.map((waste) => (
               <div key={waste.id} className="flex items-center justify-between p-3 bg-accent/30 rounded-lg">
                 <div>
-                  <p className="font-medium">{waste.name}</p>
-                  <p className="text-sm text-muted-foreground">per {waste.unit}</p>
+                  <p className="font-medium text-sm lg:text-base">{waste.name}</p>
+                  <p className="text-xs lg:text-sm text-muted-foreground">per {waste.unit}</p>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm">Rp</span>
+                  <span className="text-xs lg:text-sm">Rp</span>
                   <Input
                     type="number"
                     value={waste.pricePerKg}
                     onChange={(e) => handlePriceUpdate(waste.id, parseInt(e.target.value))}
-                    className="w-24 text-right"
+                    className="w-20 lg:w-24 text-right h-8 lg:h-10 text-sm"
                   />
                 </div>
               </div>
             ))}
-            <Button onClick={handleSaveSettings} className="w-full">
+            <Button onClick={handleSaveSettings} className="w-full h-10 lg:h-11">
               <Save className="mr-2 h-4 w-4" />
               Simpan Harga
             </Button>
@@ -252,46 +252,50 @@ export const Settings = () => {
         {/* App Configuration */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <SettingsIcon className="h-5 w-5" />
+            <CardTitle className="flex items-center space-x-2 text-lg lg:text-xl">
+              <SettingsIcon className="h-4 lg:h-5 w-4 lg:w-5" />
               <span>Konfigurasi Aplikasi</span>
             </CardTitle>
-            <CardDescription>Pengaturan umum aplikasi</CardDescription>
+            <CardDescription className="text-sm">Pengaturan umum aplikasi</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 px-3 lg:px-6">
             <div className="space-y-2">
-              <Label htmlFor="rw-name">Nama RW</Label>
+              <Label htmlFor="rw-name" className="text-sm font-medium">Nama RW</Label>
               <Input
                 id="rw-name"
                 value={appSettings.rwName}
                 onChange={(e) => setAppSettings({ ...appSettings, rwName: e.target.value })}
+                className="h-10 lg:h-11"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="contact-person">Penanggung Jawab</Label>
+              <Label htmlFor="contact-person" className="text-sm font-medium">Penanggung Jawab</Label>
               <Input
                 id="contact-person"
                 value={appSettings.contactPerson}
                 onChange={(e) => setAppSettings({ ...appSettings, contactPerson: e.target.value })}
+                className="h-10 lg:h-11"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="contact-phone">No. Telepon</Label>
+              <Label htmlFor="contact-phone" className="text-sm font-medium">No. Telepon</Label>
               <Input
                 id="contact-phone"
                 value={appSettings.contactPhone}
                 onChange={(e) => setAppSettings({ ...appSettings, contactPhone: e.target.value })}
+                className="h-10 lg:h-11"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="address">Alamat</Label>
+              <Label htmlFor="address" className="text-sm font-medium">Alamat</Label>
               <Input
                 id="address"
                 value={appSettings.address}
                 onChange={(e) => setAppSettings({ ...appSettings, address: e.target.value })}
+                className="h-10 lg:h-11"
               />
             </div>
           </CardContent>
@@ -301,19 +305,19 @@ export const Settings = () => {
       {/* Notification Settings */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Bell className="h-5 w-5" />
+          <CardTitle className="flex items-center space-x-2 text-lg lg:text-xl">
+            <Bell className="h-4 lg:h-5 w-4 lg:w-5" />
             <span>Pengaturan Notifikasi</span>
           </CardTitle>
-          <CardDescription>Kelola notifikasi dan pemberitahuan</CardDescription>
+          <CardDescription className="text-sm">Kelola notifikasi dan pemberitahuan</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <CardContent className="px-3 lg:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">Notifikasi Push</p>
-                  <p className="text-sm text-muted-foreground">Pemberitahuan dalam aplikasi</p>
+                  <p className="font-medium text-sm lg:text-base">Notifikasi Push</p>
+                  <p className="text-xs lg:text-sm text-muted-foreground">Pemberitahuan dalam aplikasi</p>
                 </div>
                 <Switch
                   checked={appSettings.notifications}
@@ -323,8 +327,8 @@ export const Settings = () => {
 
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">Laporan Email</p>
-                  <p className="text-sm text-muted-foreground">Kirim laporan bulanan via email</p>
+                  <p className="font-medium text-sm lg:text-base">Laporan Email</p>
+                  <p className="text-xs lg:text-sm text-muted-foreground">Kirim laporan bulanan via email</p>
                 </div>
                 <Switch
                   checked={appSettings.emailReports}
@@ -336,8 +340,8 @@ export const Settings = () => {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">WhatsApp Notifikasi</p>
-                  <p className="text-sm text-muted-foreground">Pemberitahuan via WhatsApp</p>
+                  <p className="font-medium text-sm lg:text-base">WhatsApp Notifikasi</p>
+                  <p className="text-xs lg:text-sm text-muted-foreground">Pemberitahuan via WhatsApp</p>
                 </div>
                 <Switch
                   checked={appSettings.whatsappNotifications}
@@ -347,8 +351,8 @@ export const Settings = () => {
 
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">Auto Backup</p>
-                  <p className="text-sm text-muted-foreground">Backup otomatis harian</p>
+                  <p className="font-medium text-sm lg:text-base">Auto Backup</p>
+                  <p className="text-xs lg:text-sm text-muted-foreground">Backup otomatis harian</p>
                 </div>
                 <Switch
                   checked={appSettings.autoBackup}
@@ -363,51 +367,51 @@ export const Settings = () => {
       {/* Data Management */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Database className="h-5 w-5" />
+          <CardTitle className="flex items-center space-x-2 text-lg lg:text-xl">
+            <Database className="h-4 lg:h-5 w-4 lg:w-5" />
             <span>Manajemen Data</span>
           </CardTitle>
-          <CardDescription>Backup, restore, dan pengelolaan data</CardDescription>
+          <CardDescription className="text-sm">Backup, restore, dan pengelolaan data</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Button variant="outline" onClick={handleBackupData} className="flex flex-col h-20 space-y-2">
-              <Download className="h-5 w-5" />
-              <span className="text-sm">Backup Data</span>
+        <CardContent className="px-3 lg:px-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-4">
+            <Button variant="outline" onClick={handleBackupData} className="flex flex-col h-16 lg:h-20 space-y-1 lg:space-y-2">
+              <Download className="h-4 lg:h-5 w-4 lg:w-5" />
+              <span className="text-xs lg:text-sm">Backup Data</span>
             </Button>
 
-            <Button variant="outline" onClick={handleRestoreData} className="flex flex-col h-20 space-y-2">
-              <Upload className="h-5 w-5" />
-              <span className="text-sm">Restore Data</span>
+            <Button variant="outline" onClick={handleRestoreData} className="flex flex-col h-16 lg:h-20 space-y-1 lg:space-y-2">
+              <Upload className="h-4 lg:h-5 w-4 lg:w-5" />
+              <span className="text-xs lg:text-sm">Restore Data</span>
             </Button>
 
-            <Button variant="outline" className="flex flex-col h-20 space-y-2">
-              <RefreshCw className="h-5 w-5" />
-              <span className="text-sm">Sinkronisasi</span>
+            <Button variant="outline" className="flex flex-col h-16 lg:h-20 space-y-1 lg:space-y-2">
+              <RefreshCw className="h-4 lg:h-5 w-4 lg:w-5" />
+              <span className="text-xs lg:text-sm">Sinkronisasi</span>
             </Button>
 
-            <Button variant="destructive" onClick={handleResetData} className="flex flex-col h-20 space-y-2">
-              <Trash2 className="h-5 w-5" />
-              <span className="text-sm">Reset Data</span>
+            <Button variant="destructive" onClick={handleResetData} className="flex flex-col h-16 lg:h-20 space-y-1 lg:space-y-2">
+              <Trash2 className="h-4 lg:h-5 w-4 lg:w-5" />
+              <span className="text-xs lg:text-sm">Reset Data</span>
             </Button>
           </div>
 
-          <Separator className="my-6" />
+          <Separator className="my-4 lg:my-6" />
 
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2 lg:gap-0">
               <div>
-                <p className="font-medium">Retensi Data</p>
-                <p className="text-sm text-muted-foreground">Data akan dihapus otomatis setelah periode ini</p>
+                <p className="font-medium text-sm lg:text-base">Retensi Data</p>
+                <p className="text-xs lg:text-sm text-muted-foreground">Data akan dihapus otomatis setelah periode ini</p>
               </div>
               <div className="flex items-center space-x-2">
                 <Input
                   type="number"
                   value={appSettings.dataRetentionDays}
                   onChange={(e) => setAppSettings({ ...appSettings, dataRetentionDays: parseInt(e.target.value) })}
-                  className="w-20"
+                  className="w-16 lg:w-20 h-8 lg:h-10 text-sm"
                 />
-                <span className="text-sm">hari</span>
+                <span className="text-xs lg:text-sm">hari</span>
               </div>
             </div>
           </div>
@@ -417,53 +421,53 @@ export const Settings = () => {
       {/* System Information */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Shield className="h-5 w-5" />
+          <CardTitle className="flex items-center space-x-2 text-lg lg:text-xl">
+            <Shield className="h-4 lg:h-5 w-4 lg:w-5" />
             <span>Informasi Sistem</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <CardContent className="px-3 lg:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
             <div className="space-y-2">
-              <p className="text-sm font-medium">Versi Aplikasi</p>
-              <Badge variant="secondary">v1.0.0</Badge>
+              <p className="text-xs lg:text-sm font-medium">Versi Aplikasi</p>
+              <Badge variant="secondary" className="text-xs">v1.0.0</Badge>
             </div>
 
             <div className="space-y-2">
-              <p className="text-sm font-medium">Database</p>
-              <Badge variant="outline">IndexedDB</Badge>
+              <p className="text-xs lg:text-sm font-medium">Database</p>
+              <Badge variant="outline" className="text-xs">IndexedDB</Badge>
             </div>
 
             <div className="space-y-2">
-              <p className="text-sm font-medium">Status</p>
-              <Badge className="bg-success text-success-foreground">Online</Badge>
+              <p className="text-xs lg:text-sm font-medium">Status</p>
+              <Badge className="bg-success text-success-foreground text-xs">Online</Badge>
             </div>
 
             <div className="space-y-2">
-              <p className="text-sm font-medium">Total RT</p>
-              <p className="text-2xl font-bold">{systemStats.totalRT}</p>
+              <p className="text-xs lg:text-sm font-medium">Total RT</p>
+              <p className="text-lg lg:text-2xl font-bold">{systemStats.totalRT}</p>
             </div>
 
             <div className="space-y-2">
-              <p className="text-sm font-medium">Total Transaksi</p>
-              <p className="text-2xl font-bold">{systemStats.totalTransactions}</p>
+              <p className="text-xs lg:text-sm font-medium">Total Transaksi</p>
+              <p className="text-lg lg:text-2xl font-bold">{systemStats.totalTransactions}</p>
             </div>
 
             <div className="space-y-2">
-              <p className="text-sm font-medium">Ukuran Database</p>
-              <p className="text-2xl font-bold">{systemStats.databaseSize} KB</p>
+              <p className="text-xs lg:text-sm font-medium">Ukuran Database</p>
+              <p className="text-lg lg:text-2xl font-bold">{systemStats.databaseSize} KB</p>
             </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Save All Settings */}
-      <div className="flex justify-end space-x-4">
-        <Button variant="outline">
+      <div className="flex flex-col lg:flex-row justify-end gap-2 lg:space-x-4 lg:gap-0">
+        <Button variant="outline" className="w-full lg:w-auto h-10 lg:h-11">
           <RefreshCw className="mr-2 h-4 w-4" />
           Reset ke Default
         </Button>
-        <Button onClick={handleSaveSettings}>
+        <Button onClick={handleSaveSettings} className="w-full lg:w-auto h-10 lg:h-11">
           <Save className="mr-2 h-4 w-4" />
           Simpan Semua Pengaturan
         </Button>
