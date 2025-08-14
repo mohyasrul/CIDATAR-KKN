@@ -11,12 +11,14 @@ interface LayoutProps {
 export const Layout = ({ children, sidebar, bottomNav }: LayoutProps) => {
   return (
     <div className="min-h-screen bg-accent/30 flex">
-      {/* Sidebar */}
-      {sidebar}
+      {/* Desktop Sidebar - Hidden on mobile */}
+      <div className="hidden lg:flex">
+        {sidebar}
+      </div>
       
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
-        {/* Header - Only show on mobile when no sidebar */}
+        {/* Mobile Header - Only show on mobile */}
         <header className="lg:hidden bg-primary shadow-sm border-b">
           <div className="px-4 sm:px-6">
             <div className="flex justify-between items-center h-16">
@@ -37,14 +39,14 @@ export const Layout = ({ children, sidebar, bottomNav }: LayoutProps) => {
         </header>
         
         {/* Main Content Area */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-full overflow-x-auto pb-20 lg:pb-8">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-full overflow-x-auto pb-24 lg:pb-8">
           <div className="max-w-7xl mx-auto">
             {children}
           </div>
         </main>
       </div>
 
-      {/* Bottom Navigation - Mobile Only */}
+      {/* Mobile Bottom Navigation - Direct render, component has its own lg:hidden */}
       {bottomNav}
     </div>
   );

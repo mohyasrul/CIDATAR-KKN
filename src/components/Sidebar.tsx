@@ -188,37 +188,34 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
   };
 
   return (
-    <>
-      {/* Desktop Sidebar Only */}
-      <div className="hidden lg:flex relative">
-        <div className={cn(
-          "bg-background border-r transition-all duration-300 ease-in-out flex flex-col shadow-sm",
-          isCollapsed ? "w-16" : "w-64"
-        )}>
-          <SidebarContent 
-            activeTab={activeTab} 
-            onTabChange={onTabChange} 
-            isCollapsed={isCollapsed}
-          />
-        </div>
-        
-        {/* Toggle Button */}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={toggleCollapsed}
-          className={cn(
-            "absolute -right-3 top-6 z-50 h-6 w-6 p-0 border bg-background shadow-md hover:shadow-lg transition-all duration-200",
-            "rounded-full"
-          )}
-        >
-          {isCollapsed ? (
-            <ChevronRight className="h-3 w-3" />
-          ) : (
-            <ChevronLeft className="h-3 w-3" />
-          )}
-        </Button>
+    <div className="relative">
+      <div className={cn(
+        "bg-background border-r transition-all duration-300 ease-in-out flex flex-col shadow-sm",
+        isCollapsed ? "w-16" : "w-64"
+      )}>
+        <SidebarContent 
+          activeTab={activeTab} 
+          onTabChange={onTabChange} 
+          isCollapsed={isCollapsed}
+        />
       </div>
-    </>
+      
+      {/* Toggle Button */}
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={toggleCollapsed}
+        className={cn(
+          "absolute -right-3 top-6 z-50 h-6 w-6 p-0 border bg-background shadow-md hover:shadow-lg transition-all duration-200",
+          "rounded-full"
+        )}
+      >
+        {isCollapsed ? (
+          <ChevronRight className="h-3 w-3" />
+        ) : (
+          <ChevronLeft className="h-3 w-3" />
+        )}
+      </Button>
+    </div>
   );
 };
