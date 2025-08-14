@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Layout } from "@/components/Layout";
-import { Navigation } from "@/components/Navigation";
+import { Sidebar } from "@/components/Sidebar";
 import { Dashboard } from "@/components/Dashboard";
 import { RTManagement } from "@/components/RTManagement";
 import { WasteDeposit } from "@/components/WasteDeposit";
@@ -34,8 +34,9 @@ const Index = () => {
   };
 
   return (
-    <Layout>
-      <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
+    <Layout 
+      sidebar={<Sidebar activeTab={activeTab} onTabChange={setActiveTab} />}
+    >
       {renderContent()}
     </Layout>
   );
