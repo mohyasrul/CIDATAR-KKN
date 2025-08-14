@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Layout } from "@/components/Layout";
 import { Sidebar } from "@/components/Sidebar";
+import { BottomNavigation } from "@/components/BottomNavigation";
+import { MobileMenu } from "@/components/MobileMenu";
 import { Dashboard } from "@/components/Dashboard";
 import { RTManagement } from "@/components/RTManagement";
 import { WasteDeposit } from "@/components/WasteDeposit";
@@ -11,6 +13,7 @@ import UserManagement from "@/components/UserManagement";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -34,11 +37,28 @@ const Index = () => {
   };
 
   return (
-    <Layout 
-      sidebar={<Sidebar activeTab={activeTab} onTabChange={setActiveTab} />}
-    >
-      {renderContent()}
-    </Layout>
+    <>
+      <Layout 
+        sidebar={<Sidebar activeTab={activeTab} onTabChange={setActiveTab} />}
+        bottomNav={
+          <BottomNavigation 
+            activeTab={activeTab} 
+            onTabChange={setActiveTab}
+            onMenuOpen={() => setIsMobileMenuOpen(true)}
+          />
+        }
+      >
+        {renderContent()}
+      </Layout>
+
+      {/* Mobile Menu Sheet */}
+      <MobileMenu
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
+    </>
   );
 };
 

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { 
   Home, 
@@ -14,7 +13,6 @@ import {
   User,
   Shield,
   UserCog,
-  Menu,
   ChevronLeft,
   ChevronRight,
   Leaf
@@ -181,7 +179,6 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
     const saved = localStorage.getItem('sidebar-collapsed');
     return saved ? JSON.parse(saved) : false;
   });
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   // Save sidebar state to localStorage when it changes
   const toggleCollapsed = () => {
@@ -192,7 +189,7 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
 
   return (
     <>
-      {/* Desktop Sidebar */}
+      {/* Desktop Sidebar Only */}
       <div className="hidden lg:flex relative">
         <div className={cn(
           "bg-background border-r transition-all duration-300 ease-in-out flex flex-col shadow-sm",
@@ -221,25 +218,6 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
             <ChevronLeft className="h-3 w-3" />
           )}
         </Button>
-      </div>
-
-      {/* Mobile Sidebar */}
-      <div className="lg:hidden">
-        <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
-          <SheetTrigger asChild>
-            <Button variant="outline" size="sm" className="mb-4">
-              <Menu className="h-4 w-4 mr-2" />
-              Menu
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-64 p-0">
-            <SidebarContent 
-              activeTab={activeTab} 
-              onTabChange={onTabChange}
-              onClose={() => setIsMobileOpen(false)}
-            />
-          </SheetContent>
-        </Sheet>
       </div>
     </>
   );

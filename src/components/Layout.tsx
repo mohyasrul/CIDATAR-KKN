@@ -5,9 +5,10 @@ import { Leaf } from "lucide-react";
 interface LayoutProps {
   children: ReactNode;
   sidebar?: ReactNode;
+  bottomNav?: ReactNode;
 }
 
-export const Layout = ({ children, sidebar }: LayoutProps) => {
+export const Layout = ({ children, sidebar, bottomNav }: LayoutProps) => {
   return (
     <div className="min-h-screen bg-accent/30 flex">
       {/* Sidebar */}
@@ -36,12 +37,15 @@ export const Layout = ({ children, sidebar }: LayoutProps) => {
         </header>
         
         {/* Main Content Area */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-full overflow-x-auto">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-full overflow-x-auto pb-20 lg:pb-8">
           <div className="max-w-7xl mx-auto">
             {children}
           </div>
         </main>
       </div>
+
+      {/* Bottom Navigation - Mobile Only */}
+      {bottomNav}
     </div>
   );
 };
