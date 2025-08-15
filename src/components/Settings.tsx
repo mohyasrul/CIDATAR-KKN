@@ -17,10 +17,12 @@ import {
   Download,
   Upload,
   Trash2,
-  AlertTriangle
+  AlertTriangle,
+  Smartphone
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { appSettingsStorage, wastePricesStorage, storage, rtStorage, wasteDepositStorage, rtSavingsStorage, transactionStorage } from "@/lib/localStorage";
+import { isPWAInstalled, isPWAInstallable, promptPWAInstall, requestNotifications, sendNotification } from "@/lib/pwa";
 
 interface WastePrice {
   id: string;
@@ -28,6 +30,169 @@ interface WastePrice {
   pricePerKg: number;
   unit: string;
 }
+
+const PWASettings = () => {
+  const [isInstalled, setIsInstalled] = useState(false);
+  const [isInstallable, setIsInstallable] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [isInstalling, setIsInstalling] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    setIsInstalled(isPWAInstalled());
+    setIsInstallable(isPWAInstallable());
+    setNotificationsEnabled(Notification.permission === 'granted');
+
+    const handleInstallable = () => setIsInstallable(true);
+    const handleInstalled = () => {
+      setIsInstalled(true);
+      setIsInstallable(false);
+    };
+
+    window.addEventListener('pwa-installable', handleInstallable);
+    window.addEventListener('pwa-installed', handleInstalled);
+
+    return () => {
+      window.removeEventListener('pwa-installable', handleInstallable);
+      window.removeEventListener('pwa-installed', handleInstalled);
+    };
+  }, []);
+
+  const handleInstall = async () => {
+    setIsInstalling(true);
+    try {
+      const success = await promptPWAInstall();
+      if (success) {
+        toast({
+          title: "Aplikasi Terinstall",
+          description: "Bank Sampah berhasil diinstall di perangkat Anda",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Install Gagal",
+        description: "Terjadi kesalahan saat menginstall aplikasi",
+        variant: "destructive"
+      });
+    } finally {
+      setIsInstalling(false);
+    }
+  };
+
+  const handleRequestNotifications = async () => {
+    try {
+      const granted = await requestNotifications();
+      setNotificationsEnabled(granted);
+      if (granted) {
+        sendNotification("Notifikasi Aktif", {
+          body: "Anda akan menerima notifikasi untuk update penting"
+        });
+        toast({
+          title: "Notifikasi Diaktifkan",
+          description: "Anda akan menerima notifikasi untuk update penting",
+        });
+      } else {
+        toast({
+          title: "Izin Ditolak",
+          description: "Notifikasi tidak dapat diaktifkan",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Terjadi kesalahan saat mengaktifkan notifikasi",
+        variant: "destructive"
+      });
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <Label className="text-sm lg:text-base">Status Instalasi</Label>
+              <p className="text-xs lg:text-sm text-muted-foreground">
+                {isInstalled ? "Aplikasi sudah terinstall" : "Belum terinstall"}
+              </p>
+            </div>
+            <Badge variant={isInstalled ? "default" : "secondary"}>
+              {isInstalled ? "Terinstall" : "Belum Install"}
+            </Badge>
+          </div>
+
+          {isInstallable && !isInstalled && (
+            <div className="flex items-center justify-between">
+              <div>
+                <Label className="text-sm lg:text-base">Install Aplikasi</Label>
+                <p className="text-xs lg:text-sm text-muted-foreground">
+                  Install untuk akses lebih cepat dan fitur offline
+                </p>
+              </div>
+              <Button onClick={handleInstall} disabled={isInstalling} size="sm">
+                <Download className="mr-2 h-4 w-4" />
+                {isInstalling ? "Installing..." : "Install"}
+              </Button>
+            </div>
+          )}
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <Label className="text-sm lg:text-base">Notifikasi Push</Label>
+              <p className="text-xs lg:text-sm text-muted-foreground">
+                Terima notifikasi untuk update penting
+              </p>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Badge variant={notificationsEnabled ? "default" : "secondary"}>
+                {notificationsEnabled ? "Aktif" : "Nonaktif"}
+              </Badge>
+              {!notificationsEnabled && (
+                <Button onClick={handleRequestNotifications} size="sm" variant="outline">
+                  <Bell className="mr-2 h-4 w-4" />
+                  Aktifkan
+                </Button>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div>
+              <Label className="text-sm lg:text-base">Status Koneksi</Label>
+              <p className="text-xs lg:text-sm text-muted-foreground">
+                {navigator.onLine ? "Online" : "Offline"}
+              </p>
+            </div>
+            <Badge variant={navigator.onLine ? "default" : "destructive"}>
+              {navigator.onLine ? "Online" : "Offline"}
+            </Badge>
+          </div>
+        </div>
+      </div>
+
+      {isInstalled && (
+        <div className="p-4 bg-accent/30 rounded-lg">
+          <div className="flex items-start space-x-3">
+            <Smartphone className="h-5 w-5 text-primary mt-0.5" />
+            <div>
+              <h4 className="font-medium text-sm lg:text-base">Fitur PWA Aktif</h4>
+              <ul className="text-xs lg:text-sm text-muted-foreground mt-1 space-y-1">
+                <li>• Akses aplikasi tanpa browser</li>
+                <li>• Bekerja dalam mode offline</li>
+                <li>• Notifikasi push untuk update</li>
+                <li>• Sinkronisasi otomatis saat online</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export const Settings = () => {
   const { toast } = useToast();
@@ -458,6 +623,22 @@ export const Settings = () => {
               <p className="text-lg lg:text-2xl font-bold">{systemStats.databaseSize} KB</p>
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* PWA Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center text-base lg:text-lg">
+            <Smartphone className="mr-2 h-4 w-4 lg:h-5 lg:w-5" />
+            Aplikasi Mobile (PWA)
+          </CardTitle>
+          <CardDescription className="text-sm lg:text-base">
+            Kelola instalasi dan pengaturan aplikasi mobile
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <PWASettings />
         </CardContent>
       </Card>
 

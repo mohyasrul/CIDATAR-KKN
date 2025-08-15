@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Eye, EyeOff, Leaf, LogIn } from 'lucide-react';
+import { Eye, EyeOff, LogIn } from 'lucide-react';
 import { login, initializeUsers } from '@/lib/auth';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -57,10 +57,12 @@ const LoginPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4">
-            <div className="bg-green-600 p-3 rounded-full">
-              <Leaf className="h-8 w-8 text-white" />
-            </div>
+          <div className="flex justify-center mb-4">
+            <img
+              src="/logo-app-cropped.jpeg"
+              alt="CIDATAR Bank Sampah Logo"
+              className="h-20 w-20 rounded-lg shadow-md"
+            />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">CIDATAR Bank Sampah</h1>
           <p className="text-gray-600">Sistem Pengelolaan Bank Sampah RT/RW</p>
@@ -143,24 +145,24 @@ const LoginPage = () => {
                 )}
               </Button>
             </form>
-
-            <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-              <h3 className="font-semibold text-sm text-gray-700 mb-2">Demo Accounts:</h3>
-              <div className="space-y-2 text-xs text-gray-600">
-                <div>
-                  <strong>Admin:</strong> admin / admin123
-                </div>
-                <div>
-                  <strong>Operator:</strong> operator / operator123
-                </div>
-              </div>
-            </div>
           </CardContent>
         </Card>
 
-        <div className="text-center mt-6 text-sm text-gray-500">
-          <p>© 2024 CIDATAR KKN Team</p>
-          <p>Mendukung program pengelolaan sampah berkelanjutan</p>
+        <div className="text-center mt-6">
+          <div className="flex items-center justify-center space-x-4 mb-2">
+            <img
+              src="/logo-kampus.png"
+              alt="ITG Logo"
+              className="h-12 w-12 rounded-full border-2 border-gray-200"
+            />
+            <img
+              src="/logo-kkn.png"
+              alt="KKN Logo"
+              className="h-12 w-12 rounded-full border-2 border-gray-200"
+            />
+          </div>
+          <p className="text-sm text-gray-500">© 2025 CIDATAR KKN Team 15 Institut Teknologi Garut</p>
+          <p className="text-sm text-gray-500">Mendukung program pengelolaan sampah berkelanjutan</p>
         </div>
       </div>
     </div>
